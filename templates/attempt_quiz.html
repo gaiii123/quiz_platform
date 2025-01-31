@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attempt Quiz</title>
+    <style>
+        /* Add your CSS styles here */
+        .multisteps_form_panel {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .question_number {
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .question_title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form_items ul {
+            list-style: none;
+            padding: 0;
+        }
+        .form_items li {
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .form_items li:hover {
+            background-color: #f0f0f0;
+        }
+        .form_items input[type="radio"] {
+            display: none;
+        }
+        .form_items label {
+            display: block;
+            cursor: pointer;
+            font-size: 16px;
+            color: #555;
+        }
+        .form_items input[type="radio"]:checked + label {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .navigation_buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .navigation_buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .navigation_buttons button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="multisteps_form_panel">
+        <!-- Form-content -->
+        <span class="question_number text-uppercase d-flex justify-content-center align-items-center">
+            Question 1/{{ quiz.questions|length }} <!-- Dynamically display question number and total -->
+        </span>
+        <h1 class="question_title text-center">{{ quiz.questions[0].question_text }}</h1> <!-- Display first question -->
+
+        <!-- Form-items -->
+        <div class="form_items d-flex justify-content-center">
+            <ul class="ps-0">
+                {% for option in quiz.questions[0].options %}
+                <li class="step_1 rounded-pill bg-white animate__animated animate__fadeInRight">
+                    <input type="radio" id="opt_{{ loop.index }}" name="stp_1_select_option" value="{{ loop.index }}">
+                    <label for="opt_{{ loop.index }}">{{ option }}</label>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons (for multi-step quizzes) -->
+    <div class="navigation_buttons d-flex justify-content-center mt-4">
+        <button id="prev_btn" disabled>Previous</button>
+        <button id="next_btn">Next</button>
+        <button id="submit_btn" style="display: none;">Submit</button> <!-- Submit button (hidden by default) -->
+    </div>
+
+    <script>
+        // JavaScript for handling multi-step navigation and storing answers
+        let currentQuestion = 0;
+        const questions = {{ quiz.questions|tojson|safe }}; // Convert quiz questions to JSON
+        const userAnswers = new Array(questions.length).fill(null); // Array to store user's answers
+
+        const questionNumber = document.querySelector('.question_number');
+        const questionTitle = document.querySelector('.question_title');
+        const formItems = document.querySelector('.form_items ul');
+        const prevBtn = document.getElementById('prev_btn');
+        const nextBtn = document.getElementById('next_btn');
+        const submitBtn = document.getElementById('submit_btn');
+
+        function updateQuestion(index) {
+            // Update question number
+            questionNumber.textContent = `Question ${index + 1}/${questions.length}`;
+
+            // Update question title
+            questionTitle.textContent = questions[index].question_text;
+
+            // Update options
+            formItems.innerHTML = questions[index].options.map((option, i) => `
+                <li class="step_1 rounded-pill bg-white animate__animated animate__fadeInRight">
+                    <input type="radio" id="opt_${i + 1}" name="stp_${index + 1}_select_option" value="${i + 1}"
+                        ${userAnswers[index] === i + 1 ? 'checked' : ''}>
+                    <label for="opt_${i + 1}">${option}</label>
+                </li>
+            `).join('');
+
+            // Enable/disable navigation buttons
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === questions.length - 1;
+
+            // Show submit button on the last question
+            if (index === questions.length - 1) {
+                submitBtn.style.display = 'block';
+                nextBtn.style.display = 'none';
+            } else {
+                submitBtn.style.display = 'none';
+                nextBtn.style.display = 'block';
+            }
+        }
+
+        function saveAnswer() {
+            const selectedOption = document.querySelector(`input[name="stp_${currentQuestion + 1}_select_option"]:checked`);
+            if (selectedOption) {
+                userAnswers[currentQuestion] = parseInt(selectedOption.value); // Save the selected answer
+            }
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                saveAnswer(); // Save the current answer before moving to the previous question
+                currentQuestion--;
+                updateQuestion(currentQuestion);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < questions.length - 1) {
+                saveAnswer(); // Save the current answer before moving to the next question
+                currentQuestion++;
+                updateQuestion(currentQuestion);
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            saveAnswer(); // Save the current answer before submitting
+
+            // Check if all questions are answered
+            if (userAnswers.includes(null)) {
+                alert("Please answer all questions before submitting!");
+                return;
+            }
+
+            // Submit the form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/submit_quiz/{{ quiz._id }}`;
+
+            userAnswers.forEach((answer, index) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `q${index + 1}`;
+                input.value = answer;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        });
+
+        // Initialize the first question
+        updateQuestion(currentQuestion);
+    </script>
+</body>
+</html>

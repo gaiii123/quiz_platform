@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Quizzes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        a {
+            text-decoration: none;
+            color: #0066cc;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Available Quizzes</h2>
+    <div class="quiz-container">
+        {% for quiz in quizzes %}
+            <p><a href="/attempt_quiz/{{ quiz._id }}">{{ quiz.title }}</a></p>
+        {% endfor %}
+    </div>
+</body>
+</html>

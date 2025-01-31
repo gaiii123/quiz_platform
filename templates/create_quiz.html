@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            background-color: #0066cc;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0057b8;
+        }
+    </style>
+    <script>
+        function addQuestionFields() {
+            let container = document.getElementById("questions-container");
+            container.innerHTML = "";
+            for (let i = 1; i <= 10; i++) {
+                container.innerHTML += `
+                    <h4>Question ${i}</h4>
+                    <input type="text" name="question${i}" placeholder="Enter Question ${i}" required>
+                    <label>Options:</label>
+                    <input type="text" name="q${i}_option1" placeholder="Option 1" required>
+                    <input type="text" name="q${i}_option2" placeholder="Option 2" required>
+                    <input type="text" name="q${i}_option3" placeholder="Option 3" required>
+                    <input type="text" name="q${i}_option4" placeholder="Option 4" required>
+                    <label>Correct Answer:</label>
+                    <select name="q${i}_correct" required>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                        <option value="4">Option 4</option>
+                    </select>
+                    <hr>
+                `;
+            }
+        }
+    </script>
+</head>
+<body onload="addQuestionFields()">
+
+    <div class="container">
+        <h2>Create a New Quiz</h2>
+        <form method="POST" action="/create_quiz">
+            <label>Quiz Title:</label>
+            <input type="text" name="title" required>
+            
+            <label>Time Limit (in minutes):</label>
+            <input type="number" name="time_limit" required>
+
+            <div id="questions-container"></div>
+
+            <button type="submit">Create Quiz</button>
+        </form>
+    </div>
+
+</body>
+</html>

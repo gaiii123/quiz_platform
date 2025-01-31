@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .quiz-select {
+            width: 80%;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .quiz-select select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f8f8;
+            color: #333;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <h2>Leaderboard</h2>
+    <div class="quiz-select">
+        <label for="quiz-select">Select Quiz:</label>
+        <select id="quiz-select" onchange="loadLeaderboard(this.value)">
+            <option value="">-- Select a Quiz --</option>
+            {% for quiz in quizzes %}
+                <option value="{{ quiz._id }}">{{ quiz.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Username</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+            {% for student in leaderboard %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ student.username }}</td>
+                    <td>{{ student.score }} Points</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function loadLeaderboard(quizId) {
+            if (!quizId) return;
+
+            fetch(`/leaderboard?quiz_id=${quizId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const leaderboardBody = document.getElementById('leaderboard-body');
+                    leaderboardBody.innerHTML = ''; // Clear existing rows
+
+                    data.forEach((student, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${student.username}</td>
+                            <td>${student.score} Points</td>
+                        `;
+                        leaderboardBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error loading leaderboard:', error));
+        }
+    </script>
+</body>
+</html>
