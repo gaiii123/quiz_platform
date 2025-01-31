@@ -42,6 +42,14 @@
             font-weight: bold;
         }
     </style>
+    <script>
+        // Prevent going back to the previous page
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1); // Redirect to the current page
+            window.location.href = "/student_dashboard"; // Redirect to the dashboard
+        };
+    </script>
 </head>
 <body>
     <div class="container">

@@ -71,9 +71,20 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            color: #d9534f;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Timer -->
+    <div class="timer" id="timer">Time Remaining: {{ quiz.time_limit }}:00</div>
+
+    <!-- Quiz Content -->
     <div class="multisteps_form_panel">
         <!-- Form-content -->
         <span class="question_number text-uppercase d-flex justify-content-center align-items-center">
@@ -114,6 +125,25 @@
         const nextBtn = document.getElementById('next_btn');
         const submitBtn = document.getElementById('submit_btn');
 
+        // Timer functionality
+        const timeLimit = {{ quiz.time_limit }}; // Time limit in minutes
+        let timeLeft = timeLimit * 60; // Convert to seconds
+        const timerElement = document.getElementById('timer');
+
+        const timerInterval = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `Time Remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Automatically submit the quiz when time is up
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("Time's up! Submitting your quiz.");
+                submitQuiz();
+            }
+        }, 1000);
+
         function updateQuestion(index) {
             // Update question number
             questionNumber.textContent = `Question ${index + 1}/${questions.length}`;
@@ -151,6 +181,26 @@
             }
         }
 
+        function submitQuiz() {
+            saveAnswer(); // Save the current answer before submitting
+
+            // Submit the form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/submit_quiz/{{ quiz._id }}`;
+
+            userAnswers.forEach((answer, index) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `q${index + 1}`;
+                input.value = answer || 0; // Use 0 for unanswered questions
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
         prevBtn.addEventListener('click', () => {
             if (currentQuestion > 0) {
                 saveAnswer(); // Save the current answer before moving to the previous question
@@ -167,34 +217,19 @@
             }
         });
 
-        submitBtn.addEventListener('click', () => {
-            saveAnswer(); // Save the current answer before submitting
-
-            // Check if all questions are answered
-            if (userAnswers.includes(null)) {
-                alert("Please answer all questions before submitting!");
-                return;
-            }
-
-            // Submit the form
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/submit_quiz/{{ quiz._id }}`;
-
-            userAnswers.forEach((answer, index) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = `q${index + 1}`;
-                input.value = answer;
-                form.appendChild(input);
-            });
-
-            document.body.appendChild(form);
-            form.submit();
-        });
+        submitBtn.addEventListener('click', submitQuiz);
 
         // Initialize the first question
         updateQuestion(currentQuestion);
+
+        
+        // Prevent going back to the previous page
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1); // Redirect to the current page
+            window.location.href = "/student_dashboard"; // Redirect to the dashboard
+        };
+    
     </script>
 </body>
 </html>

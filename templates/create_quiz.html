@@ -68,10 +68,16 @@
                 `;
             }
         }
+
+        // Prevent going back to the previous page
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1); // Redirect to the current page
+            window.location.href = "/teacher_dashboard"; // Redirect to the dashboard
+        };
     </script>
 </head>
 <body onload="addQuestionFields()">
-
     <div class="container">
         <h2>Create a New Quiz</h2>
         <form method="POST" action="/create_quiz">
@@ -81,11 +87,22 @@
             <label>Time Limit (in minutes):</label>
             <input type="number" name="time_limit" required>
 
+            <label>Start Date:</label>
+            <input type="date" name="start_date" required>
+
+            <label>Start Time:</label>
+            <input type="time" name="start_time" required>
+
+            <label>Closing Date:</label>
+            <input type="date" name="closing_date" required>
+
+            <label>Closing Time:</label>
+            <input type="time" name="closing_time" required>
+
             <div id="questions-container"></div>
 
             <button type="submit">Create Quiz</button>
         </form>
     </div>
-
 </body>
 </html>

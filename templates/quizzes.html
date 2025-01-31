@@ -22,14 +22,100 @@
             color: #0066cc;
             font-size: 18px;
         }
+        .quiz-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .quiz-item:last-child {
+            border-bottom: none;
+        }
+        .quiz-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .quiz-time {
+            font-size: 14px;
+            color: #666;
+        }
+        .quiz-status {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+        /* Toast message styles */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #d9534f;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+        }
     </style>
 </head>
 <body>
+    <!-- Toast message -->
+    <div id="toast" class="toast">You have already attempted this quiz. You cannot attempt it again.</div>
+
     <h2>Available Quizzes</h2>
     <div class="quiz-container">
         {% for quiz in quizzes %}
-            <p><a href="/attempt_quiz/{{ quiz._id }}">{{ quiz.title }}</a></p>
+            <div class="quiz-item">
+                <div class="quiz-title">
+                    {% if quiz.closing_time and quiz.closing_time < current_time %}
+                        <span>{{ quiz.title }}</span> <!-- Show title without link -->
+                    {% else %}
+                        {% set attempted = attempted_quizzes.get(quiz._id|string, False) %}
+                        {% if attempted %}
+                            <span onclick="showToast()">{{ quiz.title }}</span> <!-- Show title without link -->
+                        {% else %}
+                            <a href="/attempt_quiz/{{ quiz._id }}">{{ quiz.title }}</a> <!-- Show title with link -->
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="quiz-time">
+                    <p>Duration: {{ quiz.time_limit }} minutes</p>
+                    {% if quiz.start_time %}
+                        <p>Start Time: {{ quiz.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    {% else %}
+                        <p>Start Time: Not specified</p>
+                    {% endif %}
+                    {% if quiz.closing_time %}
+                        <p>Closing Time: {{ quiz.closing_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    {% else %}
+                        <p>Closing Time: Not specified</p>
+                    {% endif %}
+                </div>
+                <div class="quiz-status">
+                    {% if quiz.closing_time and quiz.closing_time < current_time %}
+                        Quiz Ended
+                    {% else %}
+                        {% set attempted = attempted_quizzes.get(quiz._id|string, False) %}
+                        {% if attempted %}
+                            Quiz Attempted
+                        {% else %}
+                            Quiz Active
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
     </div>
+
+    <script>
+        // Function to show the toast message
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block'; // Show the toast
+            setTimeout(() => {
+                toast.style.display = 'none'; // Hide the toast after 5 seconds
+            }, 5000);
+        }
+    </script>
 </body>
 </html>
