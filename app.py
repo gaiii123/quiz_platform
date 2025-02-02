@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask import jsonify
 from datetime import datetime
-from config import users_collection, quizzes_collection, results_collection
+from config.db_config import users_collection, quizzes_collection, results_collection
 app = Flask(__name__)
 app.secret_key = "secret"
 
