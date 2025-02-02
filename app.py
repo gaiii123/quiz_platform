@@ -46,7 +46,7 @@ def register():
         
         # Check if the username already exists
         if users_collection.find_one({"username": username}):
-            return "Username already exists"
+            return render_template('userexist.html')
         
         # Insert new user into the database
         users_collection.insert_one({
