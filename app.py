@@ -1,3 +1,4 @@
+from flask_socketio import SocketIO
 from flask import Flask, render_template, request, redirect, session, make_response
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -32,7 +33,7 @@ def login():
                 return redirect('/teacher_dashboard')
             elif user['role'] == 'student':
                 return redirect('/student_dashboard')
-        return "Invalid credentials"
+        return render_template('invalid_credentials.html')
     
     return render_template('login.html')
 
@@ -47,7 +48,7 @@ def register():
         
         # Check if the username already exists
         if users_collection.find_one({"username": username}):
-            return "Username already exists"
+            return render_template('userexist.html')
         
         # Insert new user into the database
         users_collection.insert_one({
