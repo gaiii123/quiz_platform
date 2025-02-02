@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .button-container a {
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-container a:hover {
+            background-color: #0056b3;
+        }
+
+        .button-container a:active {
+            background-color: #004080;
+        }
+
+        .button-container a.logout {
+            background-color: #dc3545;
+        }
+
+        .button-container a.logout:hover {
+            background-color: #c82333;
+        }
+
+        .button-container a.logout:active {
+            background-color: #bd2130;
+        }
+    </style>
+    <script>
+        // Prevent going back to the previous page
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1); // Redirect to the current page
+        };
+    </script>
+</head>
+<body>
+    <h1>Welcome, {{ username }} (Student)</h1>
+    <div class="button-container">
+        <a href="/create_quiz">Create a New Quiz</a>
+    <a href="/leaderboard">View Leaderboard</a>
+    <a href="/logout">Logout</a>
+    </div>
+</body>
+</html>

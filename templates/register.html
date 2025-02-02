@@ -35,16 +35,16 @@
             color: #555;
         }
 
-        input[type="text"], input[type="email"], input[type="password"] {
+        input, select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
         }
 
-        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+        input:focus, select:focus {
             border-color: #0066cc;
             outline: none;
         }
@@ -70,14 +70,29 @@
             font-size: 12px;
             text-align: center;
         }
+
+        .login-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .login-link a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
     </style>
     <script>
         function validateForm() {
             var username = document.getElementById('username').value;
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
+            var role = document.getElementById('role').value;
 
-            if (username === "" || email === "" || password === "") {
+            if (username === "" || email === "" || password === "" || role === "") {
                 alert("All fields are required.");
                 return false;
             }
@@ -97,21 +112,27 @@
     <div class="register-container">
         <h1>Register</h1>
         <form method="POST" action="/register" onsubmit="return validateForm()">
-            <div class="input-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="">Select Role</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+            </select>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
             <button type="submit">Register</button>
 
-            <div class="error" id="error-message"></div>
+            <div class="login-link">
+                Already have an account? <a href="/login">Login here</a>
+            </div>
         </form>
     </div>
 

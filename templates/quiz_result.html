@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .question {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .correct-answer {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect-answer {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        // Prevent going back to the previous page
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1); // Redirect to the current page
+            window.location.href = "/student_dashboard"; // Redirect to the dashboard
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Quiz Result</h2>
+        <p><strong>Score:</strong> {{ result.score }} / {{ result.total }} ({{ result.percentage }}%)</p>
+        {% for answer in result.answers %}
+            <div class="question">
+                <p><strong>Question:</strong> {{ answer.question }}</p>
+                <p><strong>Your Answer:</strong> {{ answer.selected_option }}</p>
+                <p><strong>Correct Answer:</strong> <span class="correct-answer">{{ answer.correct_option }}</span></p>
+                <p><strong>Result:</strong>
+                    {% if answer.is_correct %}
+                        <span class="correct-answer">Correct</span>
+                    {% else %}
+                        <span class="incorrect-answer">Incorrect</span>
+                    {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+        <a href="/student_dashboard">Back to Dashboard</a>
+    </div>
+</body>
+</html>
