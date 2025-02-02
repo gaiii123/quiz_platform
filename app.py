@@ -25,7 +25,7 @@ def login():
         
         if user:
             session['username'] = username
-            session['role'] = user['role']  # Store role in session
+            session['role'] = user['role']  # Store role in sessions
             
             # Redirect based on role
             if user['role'] == 'teacher':
