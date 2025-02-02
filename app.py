@@ -5,6 +5,7 @@ from flask import jsonify
 from datetime import datetime
 from config.db_config import users_collection, quizzes_collection, results_collection
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.secret_key = "secret"
 
 
