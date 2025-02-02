@@ -5,8 +5,8 @@ import threading
 import time
 from pymongo.errors import ConnectionFailure
 # MongoDB connection
-client1 = MongoClient("mongodb+srv://gaiii123:2001%40Gayan@cluster0.8ezvo.mongodb.net/", server_api=ServerApi('1'))
-client2 = MongoClient("mongodb+srv://798white:daDd4Utd0q5DyTKx@cluster0.wc8bf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", server_api=ServerApi('1'))
+client1 = MongoClient("mongodb+srv://798white:daDd4Utd0q5DyTKx@cluster0.wc8bf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", server_api=ServerApi('1'))
+client2 = MongoClient("mongodb+srv://gaiii123:2001%40Gayan@cluster0.8ezvo.mongodb.net/", server_api=ServerApi('1'))
 
 db1 = client1["quiz_platform"]
 db2 = client2["quiz_platform"]
