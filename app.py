@@ -5,6 +5,7 @@ from flask import jsonify
 from datetime import datetime
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.secret_key = "secret"
 
 # MongoDB connection
