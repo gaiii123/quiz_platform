@@ -3,16 +3,12 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask import jsonify
 from datetime import datetime
-
+from config.db_config import users_collection, quizzes_collection, results_collection
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.secret_key = "secret"
 
-# MongoDB connection
-client = MongoClient("mongodb+srv://gaiii123:2001%40Gayan@cluster0.8ezvo.mongodb.net/")
-db = client["quiz_platform"]
-users_collection = db["users"]
-quizzes_collection = db["quizzes"]
-results_collection = db["results"]  # Collection to store quiz results
+
 
 # Landing Page
 @app.route('/')
